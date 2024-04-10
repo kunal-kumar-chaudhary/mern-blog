@@ -1,7 +1,7 @@
 import { errorHandler } from "../utils/error.js";
-import Post from "../models/Post.js";
+import Post from "../models/post.model.js";
 
-export const create = async (req, res) => {
+export const create = async (req, res, next) => {
 
     // if the uses is not admin, he/she is not allowed to create a post
     if(!req.user.isAdmin){
