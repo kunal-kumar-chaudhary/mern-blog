@@ -6,9 +6,11 @@ import { Sidebar } from 'flowbite-react'
 import { HiArrowSmRight, HiUser } from 'react-icons/hi'
 import { signoutSuccess } from '../redux/user/userSlice'
 import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const DashSidebar = () => {
     const dispatch = useDispatch();
+    const { currentUser } = useSelector((state) => state.user);
     const location = useLocation();
     const [tab, setTab] = useState("");
     useEffect(() => {
@@ -43,7 +45,7 @@ const DashSidebar = () => {
         <Sidebar.Items>
             <Sidebar.ItemGroup>
                 <Link to="/dashboard?tab=profile">
-                <Sidebar.Item active={tab==="profile"} icon={HiUser} label={"User"} labelColor="dark" as="div">
+                <Sidebar.Item active={tab==="profile"} icon={HiUser} label={currentUser.isAdmin ? "Admin": "User"} labelColor="dark" as="div">
                      Profile
                 </Sidebar.Item>
                 </Link>

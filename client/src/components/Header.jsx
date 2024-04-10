@@ -15,8 +15,8 @@ const Header = () => {
   const { theme } = useSelector((state) => state.theme);
   const path = useLocation().pathname;
 
-  const handleSignout = async (e)=>{
-    e.preventDefault();
+  const handleSignout = async(e)=>{
+   
     try{
       const res = await fetch("/api/user/signout", {method: "POST"});
       const data = await res.json();
