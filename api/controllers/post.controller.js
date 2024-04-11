@@ -38,7 +38,7 @@ export const getposts = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 9;
     // we will sort the posts by the latest first
     const sortDirection = req.query.order === "asc" ? 1 : -1;
-    console.log(req.query);
+ 
     // getting posts based on the query parameters passed in the url
     const posts = await Post.find({
       ...(req.query.userId && { userId: req.query.userId }),
@@ -56,7 +56,7 @@ export const getposts = async (req, res, next) => {
       .sort({ updatedAt: sortDirection })
       .skip(startIndex)
       .limit(limit);
-      console.log(posts);
+
     // getting total number of posts
     const totalPosts = await Post.countDocuments();
 
@@ -73,10 +73,28 @@ export const getposts = async (req, res, next) => {
     const lastMonthPosts = await Post.countDocuments({
       createdAt: { $gte: oneMonthAgo },
     });
-    console.log(posts);
     res.status(200).json({posts, totalPosts, lastMonthPosts});
 
   } catch (err) {
     next(err);
   }
 };
+
+export const deletepost = async (req, res, next)=>{
+    console.log("point0");
+    // our middleware is adding "user" in the request object after verifying the token
+    // if the user is not authenticated and not an admin, they are not allowed to delete the post
+    if(!req.user.isAdmin || req.user.id !== req.params.userId){
+        return next(errorHandler(403, "You're not allowed to delete this post"));
+    }
+ 
+    try{
+        console.log("point1");
+        await Post.findByIdAndDelete(req.params.postId);
+        res.status(200).json("Post has been deleted");
+    }
+    catch(err){
+        console.log("point2");
+        next(err);
+    }
+}
