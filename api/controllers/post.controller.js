@@ -38,10 +38,10 @@ export const getposts = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 9;
     // we will sort the posts by the latest first
     const sortDirection = req.query.order === "asc" ? 1 : -1;
-
+    console.log(req.query);
     // getting posts based on the query parameters passed in the url
-    const posts = await Post.find(
-      ...(req.user.userId && { userId: req.user.userId }),
+    const posts = await Post.find({
+      ...(req.query.userId && { userId: req.query.userId }),
       ...(req.query.category && { category: req.query.category }),
       ...(req.query.slug && { slug: req.query.slug }),
       ...(req.query.postId && { postId: req.query.category }),
@@ -50,12 +50,13 @@ export const getposts = async (req, res, next) => {
           { title: { $regex: req.query.searchTerm, $options: "i" } },
           { content: { $regex: req.query.searchTerm, $options: "i" } },
         ],
-      })
+      }),
+    }
     )
       .sort({ updatedAt: sortDirection })
       .skip(startIndex)
       .limit(limit);
-
+      console.log(posts);
     // getting total number of posts
     const totalPosts = await Post.countDocuments();
 
@@ -72,7 +73,7 @@ export const getposts = async (req, res, next) => {
     const lastMonthPosts = await Post.countDocuments({
       createdAt: { $gte: oneMonthAgo },
     });
-
+    console.log(posts);
     res.status(200).json({posts, totalPosts, lastMonthPosts});
 
   } catch (err) {
