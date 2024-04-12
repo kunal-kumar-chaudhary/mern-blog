@@ -32,11 +32,12 @@ const UpdatePost = () => {
       const fetchPosts = async () => {
         const res = await fetch(`/api/post/getposts?postId=${postId}`);
         const data = await res.json();
+        console.log(data)
         if (!res.ok) {
           setPublishError(data.message);
           return;
         }
-        if (res.ok) {
+        if (res.ok && data.posts && data.posts.length > 0) {
           setPublishError(null);
           setFormData(data.posts[0]); // from array we get the first member
         }
@@ -89,7 +90,8 @@ const UpdatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/post/updatepost/${formData._id}/${currentUser._id}`, {
+        console.log(formData._id)
+      const res = await fetch(`/api/post/updatepost/${postId}/${currentUser._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -97,6 +99,7 @@ const UpdatePost = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      console.log(data);
       if (!res.ok) {
         setPublishError(data.message);
       }
