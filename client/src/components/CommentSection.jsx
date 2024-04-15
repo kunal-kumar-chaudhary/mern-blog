@@ -1,27 +1,27 @@
 import { Alert, Button, Textarea } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Comment from "./Comment";
 
 const CommentSection = ({ postId }) => {
+  const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState(null);
   const [comments, setComments] = useState([]);
-  console.log(comments)
-  useEffect(()=>{
-    const getComments = async()=>{
-      try{
-      const res = await fetch(`/api/comment/getPostComments/${postId}`)
-      const data = await res.json();
-      if(res.ok){
-        setComments(data);
+  console.log(comments);
+  useEffect(() => {
+    const getComments = async () => {
+      try {
+        const res = await fetch(`/api/comment/getPostComments/${postId}`);
+        const data = await res.json();
+        if (res.ok) {
+          setComments(data);
+        }
+      } catch (err) {
+        setCommentError(err.message);
       }
-    }
-    catch(err){
-      setCommentError(err.message)
-    } 
     };
     getComments();
   }, [postId]);
@@ -47,7 +47,38 @@ const CommentSection = ({ postId }) => {
       if (res.ok) {
         setComment("");
         setCommentError(null);
-        setComments([data, ...comments])
+        setComments([data, ...comments]);
+      }
+    } catch (err) {
+      setCommentError(err.message);
+    }
+  };
+
+  const handleLike = async (commentId) => {
+    try {
+      // if the user is not authenticated
+      if (!currentUser) {
+        navigate("/sign-in");
+        return;
+      }
+      // if the user is authenticated
+      const res = await fetch(`/api/comment/likeComment/${commentId}`, {
+        method: "PUT",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // update the comment array with the new data
+        setComments(
+          comments.map((comment) => {
+            return comment._id === commentId
+              ? {
+                  ...comment,
+                  likes: data.likes,
+                  numberOfLikes: data.likes.length,
+                }
+              : comment;
+          })
+        );
       }
     } catch (err) {
       setCommentError(err.message);
@@ -106,18 +137,20 @@ const CommentSection = ({ postId }) => {
           )}
         </form>
       )}
-      {comments.length === 0 ? (<p className="text-sm my-5">No comments yet!</p>): (
-         <>
-         <div className="text-sm my-5 flex items-center gap-1">
-          <p>Comments</p>
-          <div className="border border-gray-400 py-1 px-2 rounded-sm">
+      {comments.length === 0 ? (
+        <p className="text-sm my-5">No comments yet!</p>
+      ) : (
+        <>
+          <div className="text-sm my-5 flex items-center gap-1">
+            <p>Comments</p>
+            <div className="border border-gray-400 py-1 px-2 rounded-sm">
               <p>{comments.length}</p>
+            </div>
           </div>
-         </div>
-         {
-          comments.map((comment)=> <Comment key={comment._id} comment={comment}/>)
-         }
-         </>
+          {comments.map((comment) => (
+            <Comment key={comment._id} comment={comment} onLike={handleLike} />
+          ))}
+        </>
       )}
     </div>
   );
