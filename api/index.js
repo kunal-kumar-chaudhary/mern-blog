@@ -11,7 +11,14 @@ import commentRoutes from "./routes/comment.route.js";
 dotenv.config();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO);
+console.log(process.env.MONGO);
+mongoose.connect(process.env.MONGO).then(() => {
+    console.log("Connected to MongoDB");
+})
+.catch((err) => {
+    console.log(err);
+});
+
 
 const app = express();
 

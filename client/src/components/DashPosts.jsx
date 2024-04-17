@@ -5,7 +5,6 @@ import { Table, Modal } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { Button } from "flowbite-react";
-import { current } from "@reduxjs/toolkit";
 
 const DashPosts = () => {
   const [userPosts, setUserPosts] = useState([]);
@@ -13,10 +12,12 @@ const DashPosts = () => {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState("");
+  
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
+        console.log(res);
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
