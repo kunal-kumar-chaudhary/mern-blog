@@ -32,7 +32,6 @@ const UpdatePost = () => {
       const fetchPosts = async () => {
         const res = await fetch(`/api/post/getposts?postId=${postId}`);
         const data = await res.json();
-        console.log(data)
         if (!res.ok) {
           setPublishError(data.message);
           return;
@@ -90,7 +89,6 @@ const UpdatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        console.log(formData._id)
       const res = await fetch(`/api/post/updatepost/${postId}/${currentUser._id}`, {
         method: "PUT",
         headers: {
@@ -99,7 +97,6 @@ const UpdatePost = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data);
       if (!res.ok) {
         setPublishError(data.message);
       }

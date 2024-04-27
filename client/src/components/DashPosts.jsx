@@ -17,7 +17,6 @@ const DashPosts = () => {
     const fetchPosts = async () => {
       try {
         const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
-        console.log(res);
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
@@ -56,14 +55,11 @@ const DashPosts = () => {
   const handleDeletePost = async () => {
     setShowModal(false);
     try {
-        console.log("point1");
       const res = await fetch(
         `/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
         { method: "DELETE" }
       );
-      console.log("point2");
       const data = await res.json();
-      console.log("point3");
       if (!res.ok) {
         console.log(data.message);
       } else {
